@@ -1075,6 +1075,9 @@ function onFlipsExhausted() {
   }
   const kissSection = document.getElementById('kiss-section');
   const kissBtn = document.getElementById('kiss-btn');
+  kissSection.querySelector('.kiss-msg').textContent = kissCount === 0
+    ? '还想再翻一次吗？如果你在我身边，亲我一口吧。'
+    : '再亲一口？';
   kissBtn.textContent = kissCount === 0 ? '亲完了' : '再亲一口';
   kissBtn.classList.remove('show');
   kissSection.classList.add('show');
