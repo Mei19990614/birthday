@@ -78,8 +78,8 @@
   .scroll-hint {
     position: absolute;
     bottom: 2.5rem;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
+    right: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -756,7 +756,7 @@
 <section id="hero">
   <div class="hero-date">小鲤生日快乐</div>
   <h1 class="hero-title">
-    过去四个月因为<em>你</em>我很幸福<br>
+    过去四个月因为你我很幸福<br>
   </h1>
   <p class="hero-sub">一些事、一些信、一些只有我们知道的瞬间</p>
   <div class="scroll-hint">
@@ -873,8 +873,8 @@
         庆祝你的存在，这是加缪说的。
         感谢你的存在，这是老师说的。
 
-        苦恼了好久要怎么准备你的生日，有史以来我都没有这么在乎过一个人...
-        的生日。 
+        苦恼了好久要怎么准备你的生日，从来我都没有这么在乎过一个人...
+        的生日。
         不像你，会做手工，手串木雕陈皮？个个都是好礼物。
         我都没有什么能拿得出手的东西，但是又想用时间孕育一种在意。
         只能老本行，搓个网站了。
@@ -888,7 +888,7 @@
 
         我爱你。
       </div>
-      <div class="letter-sig">—— 【Mei】</div>
+      <div class="letter-sig">—— Mei</div>
     </div>
   </div>
 </section>
@@ -937,7 +937,8 @@ function openEnvelope() {
 // ─── COUNTER ANIMATION ───
 function animateSlot(el, target, duration) {
   const isInf = (target === '∞');
-  const numTarget = isInf ? 9999 : target;
+  const hasPlus = typeof target === 'string' && target.endsWith('+');
+  const numTarget = isInf ? 9999 : (hasPlus ? parseInt(target) : target);
   const t0 = performance.now();
 
   function tick(now) {
@@ -947,7 +948,7 @@ function animateSlot(el, target, duration) {
       el.textContent = Math.floor(eased * numTarget);
       requestAnimationFrame(tick);
     } else {
-      el.textContent = isInf ? '∞' : numTarget;
+      el.textContent = isInf ? '∞' : (hasPlus ? numTarget + '+' : numTarget);
     }
   }
   requestAnimationFrame(tick);
@@ -959,8 +960,8 @@ const DAYS = Math.floor((new Date() - START_DATE) / 86400000);
 function startCounters() {
   animateSlot(document.getElementById('cnt-days'),    DAYS,   1800);
   animateSlot(document.getElementById('cnt-meets'),     10,   1500);
-  animateSlot(document.getElementById('cnt-msgs'),   22800,   2000);
-  animateSlot(document.getElementById('cnt-letters'),   65,   1600);
+  animateSlot(document.getElementById('cnt-msgs'),   '22800+',   2000);
+  animateSlot(document.getElementById('cnt-letters'), '65+',     1600);
   animateSlot(document.getElementById('cnt-heart'), '∞',   2000);
 }
 
