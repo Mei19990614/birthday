@@ -594,6 +594,41 @@
 
   .flip-done-msg.show { opacity: 1; }
 
+  /* ─── KISS SECTION ─── */
+  .kiss-section {
+    text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+  }
+  .kiss-section.show { opacity: 1; pointer-events: auto; }
+
+  .kiss-msg {
+    font-size: 0.95rem;
+    color: var(--ink-light);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+
+  .kiss-btn {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease, background 0.2s ease, transform 0.15s ease;
+    background: var(--ink);
+    color: var(--white);
+    border: none;
+    padding: 0.75rem 2.2rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .kiss-btn.show { opacity: 1; pointer-events: auto; }
+  .kiss-btn:hover { background: var(--accent); transform: translateY(-1px); }
+
   /* ─── ENVELOPE INTRO ─── */
   #env-overlay {
     position: fixed;
@@ -865,6 +900,10 @@
 
     <div class="lottery-grid" id="lottery-grid"></div>
     <div class="flip-done-msg" id="flip-done-msg">✦ 带走我的祝福吧 ✦</div>
+    <div class="kiss-section" id="kiss-section">
+      <p class="kiss-msg">还想再翻一次吗？如果你在我身边，亲我一口吧。</p>
+      <button class="kiss-btn" id="kiss-btn" onclick="onKissBtn()">亲完了</button>
+    </div>
 
     <div class="letter-paper">
       <div class="letter-title">正经的一封信</div>
@@ -1023,6 +1062,36 @@ const PRIZES = [
 
 const shuffled = [...PRIZES].sort(() => Math.random() - 0.5);
 let flipsLeft = 3;
+let kissCount = 0;
+let kissTimer = null;
+
+const TOTAL_CARDS = PRIZES.length;
+
+function onFlipsExhausted() {
+  const flippedCount = document.querySelectorAll('.lottery-card.flipped').length;
+  if (flippedCount >= TOTAL_CARDS) {
+    document.getElementById('flip-done-msg').classList.add('show');
+    return;
+  }
+  const kissSection = document.getElementById('kiss-section');
+  const kissBtn = document.getElementById('kiss-btn');
+  kissBtn.textContent = kissCount === 0 ? '亲完了' : '再亲一口';
+  kissBtn.classList.remove('show');
+  kissSection.classList.add('show');
+  if (kissTimer) clearTimeout(kissTimer);
+  kissTimer = setTimeout(() => kissBtn.classList.add('show'), 5000);
+}
+
+function onKissBtn() {
+  kissCount++;
+  const kissSection = document.getElementById('kiss-section');
+  const kissBtn = document.getElementById('kiss-btn');
+  kissBtn.classList.remove('show');
+  kissSection.classList.remove('show');
+  flipsLeft = 1;
+  document.getElementById('flip-left').textContent = flipsLeft;
+  document.querySelectorAll('.lottery-card:not(.flipped)').forEach(c => c.classList.remove('no-more'));
+}
 
 const lotteryGrid = document.getElementById('lottery-grid');
 shuffled.forEach((prize) => {
@@ -1050,7 +1119,7 @@ shuffled.forEach((prize) => {
     document.getElementById('flip-left').textContent = flipsLeft;
     if (flipsLeft <= 0) {
       document.querySelectorAll('.lottery-card:not(.flipped)').forEach(c => c.classList.add('no-more'));
-      document.getElementById('flip-done-msg').classList.add('show');
+      onFlipsExhausted();
     }
   });
   lotteryGrid.appendChild(card);
